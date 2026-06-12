@@ -1,7 +1,8 @@
-from uplink_qkd import raw_overpass, smart_optimise
-import numpy as np
 import matplotlib.pyplot as plt 
+import numpy as np
 from tqdm import tqdm
+
+from uplink_qkd import raw_overpass, smart_optimise
 
 
 prob = lambda phi,R,h:(-1+R/(R+h)*np.sin(phi)/np.sqrt(1-(R*np.cos(phi)/(R+h))**2)) / (np.pi/3 - 2*np.acos(np.sqrt(3)*R/(R+h)/2))

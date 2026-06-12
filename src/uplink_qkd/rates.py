@@ -1,6 +1,7 @@
+from math import erf
+
 import numpy as np
 from scipy.optimize import minimize
-from math import erf
 
 
 class secure_key_rates:

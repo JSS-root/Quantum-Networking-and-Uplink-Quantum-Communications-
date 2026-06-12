@@ -1,8 +1,10 @@
 """This file holds the optimisation functions for the finite key BBM92 protocol.
 Described in the C. Lim paper: https://doi.org/10.1103/PhysRevLett.126.100501"""
-import numpy as np
 import warnings
+
+import numpy as np
 from scipy.optimize import minimize
+
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 

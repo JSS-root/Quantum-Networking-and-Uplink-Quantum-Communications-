@@ -1,7 +1,8 @@
-from uplink_qkd import smart_optimise
-import numpy as np
 import matplotlib.pyplot as plt 
+import numpy as np
 from tqdm import tqdm
+
+from uplink_qkd import smart_optimise
 # for different block size ratios sweep the qber difference between the blocks
 m_total=1e6
 avg_qber=0.05
