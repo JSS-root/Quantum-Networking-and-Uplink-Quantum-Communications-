@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uplink-qkd"
+version = "0.1.0"
+description = "Theoretical and numerical models for satellite-uplink QKD viability studies."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "James S. Sidhu" }
+]
+keywords = [
+    "quantum-key-distribution",
+    "satellite-qkd",
+    "finite-key-analysis",
+    "bbm92",
+    "uplink",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "matplotlib>=3.7",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.2",
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+notebooks = [
+    "jupyter>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/JSS-root/uplink-qkd"
+Repository = "https://github.com/JSS-root/uplink-qkd"
+Issues = "https://github.com/JSS-root/uplink-qkd/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["F", "I"]
