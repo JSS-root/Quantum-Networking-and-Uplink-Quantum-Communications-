@@ -30,10 +30,10 @@ class secure_key_rates:
         Detector dead time or detector-wise dead times for party A.
     t_dead_B : float or array-like, optional
         Detector dead time or detector-wise dead times for party B.
-    loss_format : {"loss", "dB"}, optional
+    loss_format : {loss, dB}, optional
         Format used for efficiencies supplied to performance calculations.
     custom : bool, optional
-        If ``True``, defer performance optimisation until explicit method calls.
+        If True, defer performance optimisation until explicit method calls.
     B0 : float, optional
         Initial brightness scale used by the optimiser.
 
@@ -62,10 +62,10 @@ class secure_key_rates:
             Detector dead time or detector-wise dead times for party A.
         t_dead_B : float or array-like, optional
             Detector dead time or detector-wise dead times for party B.
-        loss_format : {"loss", "dB"}, optional
+        loss_format : {loss, dB}, optional
             Format used for efficiencies supplied to performance calculations.
         custom : bool, optional
-            If ``True``, defer performance optimisation until explicit method
+            If True, defer performance optimisation until explicit method
             calls.
         B0 : float, optional
             Initial brightness scale used by the optimiser.
@@ -190,7 +190,7 @@ class secure_key_rates:
         Returns
         -------
         window_efficiency : float
-            Timing-window acceptance for detector pair ``(j, k)``.
+            Timing-window acceptance for detector pair (j, k).
 
         """
         return erf(np.sqrt(np.log(2)) * (x / self.timing_imprecision[j + k*self.d]))
@@ -223,7 +223,7 @@ class secure_key_rates:
         Parameters
         ----------
         x : list or array-like
-            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+            Coincidence-window duration and brightness, [t_CC, brightness].
 
         Returns
         -------
@@ -250,7 +250,7 @@ class secure_key_rates:
         Parameters
         ----------
         x : list or array-like
-            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+            Coincidence-window duration and brightness, [t_CC, brightness].
         bit_error : float
             Error probability used for the true-coincidence contribution.
 
@@ -286,7 +286,7 @@ class secure_key_rates:
         Returns
         -------
         entropy : float
-            Binary entropy evaluated at ``x``.
+            Binary entropy evaluated at x.
 
         """
         return -x * np.log2(x) - (1 - x) * np.log2(1 - x)
@@ -298,7 +298,7 @@ class secure_key_rates:
         Parameters
         ----------
         x : list or array-like
-            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+            Coincidence-window duration and brightness, [t_CC, brightness].
 
         Returns
         -------
@@ -398,8 +398,8 @@ def raw_overpass(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_
     Parameters
     ----------
     params : list or array-like
-        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
-        qber, qx, Brightness, Tcc]``.
+        Model parameters [intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc].
     loss_profile : array-like
         Link-loss profile sampled over the overpass.
     t_delta : float, optional
@@ -453,8 +453,8 @@ def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, D
     Parameters
     ----------
     params : list or array-like
-        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
-        qber, qx, Brightness, Tcc]``.
+        Model parameters [intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc].
     loss_profile : array-like
         Link-loss profile sampled over the overpass.
     cutoff : float
@@ -513,8 +513,8 @@ def raw_overpass_instant(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70,
     Parameters
     ----------
     params : list or array-like
-        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
-        qber, qx, Brightness, Tcc]``.
+        Model parameters [intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc].
     loss_profile : array-like
         Link-loss profile sampled over the overpass.
     t_delta : float, optional
