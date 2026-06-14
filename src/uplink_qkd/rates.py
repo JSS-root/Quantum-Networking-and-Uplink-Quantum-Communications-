@@ -1,3 +1,5 @@
+"""Coincidence and raw-overpass key-rate models for satellite QKD links."""
+
 from math import erf
 
 import numpy as np
@@ -6,12 +8,73 @@ from scipy.optimize import minimize
 
 class secure_key_rates:
     """
-    inputs include:
-    -   dark counts
-    -   qber and qx
-    -   coinc window, jitter
-    -   system loss, containing channel and heralding. heralding should be quantified at zero channel loss."""
+    Model coincidence rates and secure key rates for detector-pair measurements.
+
+    Parameters
+    ----------
+    d : int
+        Number of detectors per communication partner.
+    t_delta : float or array-like
+        Timing imprecision used for the detector-pair coincidence windows.
+    DC_A : float or array-like
+        Dark-count rate or detector-wise dark-count rates for party A.
+    DC_B : float or array-like
+        Dark-count rate or detector-wise dark-count rates for party B.
+    e_b : float
+        Intrinsic bit-error probability.
+    e_p : float
+        Intrinsic phase-error probability.
+    f : float, optional
+        Error-correction efficiency factor.
+    t_dead_A : float or array-like, optional
+        Detector dead time or detector-wise dead times for party A.
+    t_dead_B : float or array-like, optional
+        Detector dead time or detector-wise dead times for party B.
+    loss_format : {"loss", "dB"}, optional
+        Format used for efficiencies supplied to performance calculations.
+    custom : bool, optional
+        If ``True``, defer performance optimisation until explicit method calls.
+    B0 : float, optional
+        Initial brightness scale used by the optimiser.
+
+    """
     def __init__(self, d, t_delta, DC_A, DC_B, e_b, e_p, f=1.1, t_dead_A=0, t_dead_B=0, loss_format='loss', custom=False,B0=1):
+        """
+        Initialise detector, timing, error, and optimisation parameters.
+
+        Parameters
+        ----------
+        d : int
+            Number of detectors per communication partner.
+        t_delta : float or array-like
+            Timing imprecision used for the detector-pair coincidence windows.
+        DC_A : float or array-like
+            Dark-count rate or detector-wise dark-count rates for party A.
+        DC_B : float or array-like
+            Dark-count rate or detector-wise dark-count rates for party B.
+        e_b : float
+            Intrinsic bit-error probability.
+        e_p : float
+            Intrinsic phase-error probability.
+        f : float, optional
+            Error-correction efficiency factor.
+        t_dead_A : float or array-like, optional
+            Detector dead time or detector-wise dead times for party A.
+        t_dead_B : float or array-like, optional
+            Detector dead time or detector-wise dead times for party B.
+        loss_format : {"loss", "dB"}, optional
+            Format used for efficiencies supplied to performance calculations.
+        custom : bool, optional
+            If ``True``, defer performance optimisation until explicit method
+            calls.
+        B0 : float, optional
+            Initial brightness scale used by the optimiser.
+
+        Returns
+        -------
+        None
+
+        """
         self.f = f
         self.d = d  # number of detectors per communication partner.
         self.bit_error = e_b
@@ -27,10 +90,37 @@ class secure_key_rates:
             self.optimal_params, self.optimal_key_rate = self.optimize_performance(B0)
 
     def __dB_to_loss__(self):
+        """
+        Convert stored detector efficiencies from dB loss to linear efficiency.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        """
         self.efficiencies_A = 10 ** (-np.array(self.efficiencies_A) / 10)
         self.efficiencies_B = 10 ** (-np.array(self.efficiencies_B) / 10)
 
     def set_darkcounts(self, DC_A, DC_B):
+        """
+        Store dark-count rates for both communication partners.
+
+        Parameters
+        ----------
+        DC_A : float or array-like
+            Dark-count rate or detector-wise dark-count rates for party A.
+        DC_B : float or array-like
+            Dark-count rate or detector-wise dark-count rates for party B.
+
+        Returns
+        -------
+        None
+
+        """
         if isinstance(DC_A, int) or isinstance(DC_A, float):
             self.dark_counts_A = DC_A * np.ones(self.d)
         else:
@@ -41,12 +131,40 @@ class secure_key_rates:
             self.dark_counts_B = DC_B
 
     def set_jitter(self, t_delta):
+        """
+        Store timing imprecision values for detector-pair coincidence windows.
+
+        Parameters
+        ----------
+        t_delta : float or array-like
+            Timing imprecision value or detector-pair timing imprecision values.
+
+        Returns
+        -------
+        None
+
+        """
         if isinstance(t_delta, float) or isinstance(t_delta, int):
             self.timing_imprecision = t_delta * np.ones(self.d**2)
         else:
             self.timing_imprecision = t_delta
 
     def set_dead_time(self, t_dead_A, t_dead_B):
+        """
+        Store detector dead times for both communication partners.
+
+        Parameters
+        ----------
+        t_dead_A : float or array-like
+            Detector dead time or detector-wise dead times for party A.
+        t_dead_B : float or array-like
+            Detector dead time or detector-wise dead times for party B.
+
+        Returns
+        -------
+        None
+
+        """
         if isinstance(t_dead_A, float) or isinstance(t_dead_A, int):
             self.t_dead_A = t_dead_A * np.ones(self.d)
         else:
@@ -57,14 +175,62 @@ class secure_key_rates:
             self.t_dead_B = t_dead_B
 
     def __coincidence_window_loss__(self, x, j, k):
-        '''x is a coincidence window'''
+        """
+        Calculate the timing-window acceptance for one detector pair.
+
+        Parameters
+        ----------
+        x : float
+            Coincidence-window duration.
+        j : int
+            Detector index for party A.
+        k : int
+            Detector index for party B.
+
+        Returns
+        -------
+        window_efficiency : float
+            Timing-window acceptance for detector pair ``(j, k)``.
+
+        """
         return erf(np.sqrt(np.log(2)) * (x / self.timing_imprecision[j + k*self.d]))
 
     def __total_efficiency__(self, eff, b, t_dead):
+        """
+        Calculate detector efficiency including dead-time reduction.
+
+        Parameters
+        ----------
+        eff : float
+            Detector efficiency before dead-time reduction.
+        b : float
+            Source brightness.
+        t_dead : float
+            Detector dead time.
+
+        Returns
+        -------
+        total_efficiency : float
+            Detector efficiency after dead-time reduction.
+
+        """
         return eff / (1+b*eff*t_dead/self.d)
 
     def __coincidences_measured__(self, x):
-        '''x is an array of t_CC and brightness'''
+        """
+        Calculate the measured coincidence rate.
+
+        Parameters
+        ----------
+        x : list or array-like
+            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+
+        Returns
+        -------
+        coincidences : float
+            Total measured coincidence rate.
+
+        """
         result = 0
         for j in range(self.d):
             for k in range(self.d):
@@ -78,7 +244,22 @@ class secure_key_rates:
         return result
 
     def __coincidences_erroneous__(self, x, bit_error):
-        '''x is an array of t_CC and brightness'''
+        """
+        Calculate the erroneous coincidence rate.
+
+        Parameters
+        ----------
+        x : list or array-like
+            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+        bit_error : float
+            Error probability used for the true-coincidence contribution.
+
+        Returns
+        -------
+        erroneous_coincidences : float
+            Total erroneous coincidence rate.
+
+        """
         result = 0
         for j in range(self.d):
             for k in range(self.d):
@@ -94,11 +275,37 @@ class secure_key_rates:
         return result
     
     def __binary_entropy__(self, x):
-        '''x is a value between 0 and 1'''
+        """
+        Calculate the binary entropy function.
+
+        Parameters
+        ----------
+        x : float
+            Input probability.
+
+        Returns
+        -------
+        entropy : float
+            Binary entropy evaluated at ``x``.
+
+        """
         return -x * np.log2(x) - (1 - x) * np.log2(1 - x)
 
     def __objective__(self, x):
-        '''x is an array of t_CC and brightness'''
+        """
+        Calculate the negative asymptotic secure key-rate objective.
+
+        Parameters
+        ----------
+        x : list or array-like
+            Coincidence-window duration and brightness, ``[t_CC, brightness]``.
+
+        Returns
+        -------
+        negative_key_rate : float
+            Negative secure key rate used by the optimiser.
+
+        """
         q = 0.5
 
         CC_m = self.__coincidences_measured__(x)
@@ -108,7 +315,26 @@ class secure_key_rates:
         return - q * CC_m * (1.0 - self.f * self.__binary_entropy__(E_b) - self.__binary_entropy__(E_p))
 
     def custom_performance(self, tcc, B, eff_A, eff_B):
-        '''x is an array of t_CC and brightness'''
+        """
+        Calculate key-rate performance for specified system parameters.
+
+        Parameters
+        ----------
+        tcc : float
+            Coincidence-window duration.
+        B : float
+            Source brightness.
+        eff_A : float or array-like
+            Efficiency or detector-wise efficiencies for party A.
+        eff_B : float or array-like
+            Efficiency or detector-wise efficiencies for party B.
+
+        Returns
+        -------
+        key_rate : float
+            Secure key rate for the specified parameters.
+
+        """
         x=[tcc, B]
         
         if isinstance(eff_A, float) or isinstance(eff_A, int):
@@ -126,7 +352,26 @@ class secure_key_rates:
         return - self.__objective__(x)
 
     def optimize_performance(self, eff_A, eff_B, B0=1):
-        """rescaling the params to ease the optimization."""
+        """
+        Optimise coincidence-window duration and brightness.
+
+        Parameters
+        ----------
+        eff_A : float or array-like
+            Efficiency or detector-wise efficiencies for party A.
+        eff_B : float or array-like
+            Efficiency or detector-wise efficiencies for party B.
+        B0 : float, optional
+            Initial brightness scale used by the optimiser.
+
+        Returns
+        -------
+        optimal_params : list
+            Optimised coincidence-window duration and brightness.
+        optimal_key_rate : float
+            Secure key rate at the optimised parameters.
+
+        """
         if isinstance(eff_A, float) or isinstance(eff_A, int):
             self.efficiencies_A = eff_A * np.ones(self.d)
         else:
@@ -147,8 +392,39 @@ class secure_key_rates:
 
 
 def raw_overpass(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
-    """This function generates the qber and raw key length as a function of the max elevation, 
-    based on the model in 10.1103/PhysRevA.104.022406, implemented in the neumann_rates.py file."""
+    """
+    Calculate average error rates and measured coincidences over an overpass.
+
+    Parameters
+    ----------
+    params : list or array-like
+        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc]``.
+    loss_profile : array-like
+        Link-loss profile sampled over the overpass.
+    t_delta : float, optional
+        Timing imprecision used for the coincidence windows.
+    DC_A : float, optional
+        Dark-count rate for party A.
+    DC_B : float, optional
+        Dark-count rate for party B.
+    t_dead_A : float, optional
+        Detector dead time for party A.
+    t_dead_B : float, optional
+        Detector dead time for party B.
+    power : float, optional
+        Multiplicative factor applied to the source brightness.
+
+    Returns
+    -------
+    avg_qber : float
+        Coincidence-weighted average bit-error rate.
+    avg_qx : float
+        Coincidence-weighted average phase-error rate.
+    coincidences : float
+        Total measured coincidences over the overpass.
+
+    """
     intrinsic_heralding_1550, intrinsic_heralding_780, qber, qx, Brightness, Tcc = params
     Brightness*=power
     # Brightness, t_delta,intrinsic_heralding_1550, intrinsic_heralding_780,bit_err, phase_err= params
@@ -171,8 +447,41 @@ def raw_overpass(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_
     return avg_qber, avg_qx, np.sum(CC_m_overpass)
 
 def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
-    """This function generates the qber and raw key length as a function of the max elevation, 
-    based on the model in 10.1103/PhysRevA.104.022406, implemented in the neumann_rates.py file."""
+    """
+    Calculate overpass quantities after applying an error-rate cutoff.
+
+    Parameters
+    ----------
+    params : list or array-like
+        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc]``.
+    loss_profile : array-like
+        Link-loss profile sampled over the overpass.
+    cutoff : float
+        Maximum accepted value of the average of bit- and phase-error rates.
+    t_delta : float, optional
+        Timing imprecision used for the coincidence windows.
+    DC_A : float, optional
+        Dark-count rate for party A.
+    DC_B : float, optional
+        Dark-count rate for party B.
+    t_dead_A : float, optional
+        Detector dead time for party A.
+    t_dead_B : float, optional
+        Detector dead time for party B.
+    power : float, optional
+        Multiplicative factor applied to the source brightness.
+
+    Returns
+    -------
+    avg_qber : float
+        Coincidence-weighted average bit-error rate after applying the cutoff.
+    avg_qx : float
+        Coincidence-weighted average phase-error rate after applying the cutoff.
+    coincidences : float
+        Total accepted measured coincidences over the overpass.
+
+    """
     intrinsic_heralding_1550, intrinsic_heralding_780, qber, qx, Brightness, Tcc = params
     Brightness*=power
     # Brightness, t_delta,intrinsic_heralding_1550, intrinsic_heralding_780,bit_err, phase_err= params
@@ -198,8 +507,39 @@ def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, D
     return avg_qber, avg_qx, np.sum(CC_m_overpass)
 
 def raw_overpass_instant(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
-    """This function generates the qber and raw key length as a function of the max elevation, 
-    based on the model in 10.1103/PhysRevA.104.022406, implemented in the neumann_rates.py file."""
+    """
+    Calculate instantaneous error rates and coincidences over an overpass.
+
+    Parameters
+    ----------
+    params : list or array-like
+        Model parameters ``[intrinsic_heralding_1550, intrinsic_heralding_780,
+        qber, qx, Brightness, Tcc]``.
+    loss_profile : array-like
+        Link-loss profile sampled over the overpass.
+    t_delta : float, optional
+        Timing imprecision used for the coincidence windows.
+    DC_A : float, optional
+        Dark-count rate for party A.
+    DC_B : float, optional
+        Dark-count rate for party B.
+    t_dead_A : float, optional
+        Detector dead time for party A.
+    t_dead_B : float, optional
+        Detector dead time for party B.
+    power : float, optional
+        Multiplicative factor applied to the source brightness.
+
+    Returns
+    -------
+    E_b : numpy.ndarray
+        Instantaneous bit-error rates over the loss profile.
+    E_p : numpy.ndarray
+        Instantaneous phase-error rates over the loss profile.
+    CC_m_overpass : numpy.ndarray
+        Instantaneous measured coincidences over the loss profile.
+
+    """
     intrinsic_heralding_1550, intrinsic_heralding_780, qber, qx, Brightness, Tcc = params
     Brightness*=power
     # Brightness, t_delta,intrinsic_heralding_1550, intrinsic_heralding_780,bit_err, phase_err= params

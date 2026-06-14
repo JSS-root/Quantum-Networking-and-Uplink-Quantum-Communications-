@@ -61,16 +61,25 @@ Notebook support:
 
 ## Installation
 
-For development from a local checkout:
+To install and use the Python version of this repository:
+
+- Clone the repository.
+- Navigate to the repository root folder.
+- Install the package locally using `pip`.
+- Run the desired Python module, figure script, or notebook.
+
+In Terminal (macOS), Bash (Linux/Unix), or Cygwin/Command Prompt (Windows), run:
+
+```bash
+git clone https://github.com/JSS-root/uplink-qkd.git
+cd uplink-qkd
+python -m pip install -e .
+```
+
+For development, including testing and notebook support, run:
 
 ```bash
 python -m pip install -e ".[dev,notebooks]"
-```
-
-For a minimal local install:
-
-```bash
-python -m pip install -e .
 ```
 
 ## Quick Start
@@ -105,6 +114,10 @@ Some supplementary scripts require external or generated loss-profile data that 
 ## Citation
 
 If you use this software, please cite the associated paper and software record. Citation metadata is provided in [CITATION.cff](CITATION.cff) and should be updated with the final arXiv identifier and DOI once available.
+
+## Author Contact
+
+[Jasminder S. Sidhu](mailto:jsmdrsidhu%40gmail.com)
 
 ## Related Work
 
