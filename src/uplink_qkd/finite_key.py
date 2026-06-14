@@ -1,10 +1,12 @@
-"""Finite-key optimisation routines for the BBM92 protocol.
+"""
+Finite-key optimisation routines for the BBM92 protocol.
 
 This module contains the optimisation functions used to evaluate the finite-key
-secret key length ratio for the BBM92 protocol. The implementation follows the
-finite-key expression described in C. C. W. Lim et al.,
-Phys. Rev. Lett. 126, 100501 (2021):
+secret key length ratio for the BBM92 protocol.
 
+The implementation follows the finite-key expression described in
+
+[1] C. C. W. Lim et al., Phys. Rev. Lett. 126, 100501 (2021):
 https://doi.org/10.1103/PhysRevLett.126.100501
 
 The optimisation proceeds by first performing a coarse brute-force search over
@@ -32,7 +34,7 @@ def h(x):
     Returns
     -------
     entropy : float or numpy.ndarray
-        Binary entropy evaluated at ``x``.
+        Binary entropy evaluated at x.
 
     """
     return -x*np.log2(x) - (1-x)*np.log2(1-x)
@@ -44,7 +46,7 @@ def objective(x, delta, m, eps_qkd, t, f):
     Parameters
     ----------
     x : list or numpy.ndarray
-        Optimisation parameters ``[beta, nu, xi]``.
+        Optimisation parameters [beta, nu, xi].
     delta : float
         Quantum bit error rate used in the finite-key expression.
     m : float
@@ -59,7 +61,7 @@ def objective(x, delta, m, eps_qkd, t, f):
     Returns
     -------
     key_length_ratio : float or numpy.ndarray
-        Secret key length divided by the total block size ``m``.
+        Secret key length divided by the total block size m.
 
     """
     beta, nu, xi = x
@@ -97,11 +99,11 @@ def brute_search_parallel_equality(m, delta, eps_qkd, t, f, granularity=200):
         Largest positive secret key length ratio found by the brute-force
         search.
     beta : float
-        Value of ``beta`` associated with ``alpha``.
+        Value of beta associated with alpha.
     nu : float
-        Value of ``nu`` associated with ``alpha``.
+        Value of nu associated with alpha.
     xi : float
-        Value of ``xi`` associated with ``alpha``.
+        Value of xi associated with alpha.
 
     """
     beta_range = np.linspace(0,0.5,granularity)
@@ -128,7 +130,7 @@ def neg_objective(x, delta, m, eps_qkd, t, f):
     Parameters
     ----------
     x : list or numpy.ndarray
-        Optimisation parameters ``[beta, nu, xi]``.
+        Optimisation parameters [beta, nu, xi].
     delta : float
         Quantum bit error rate used in the finite-key expression.
     m : float
@@ -143,7 +145,7 @@ def neg_objective(x, delta, m, eps_qkd, t, f):
     Returns
     -------
     negative_key_length_ratio : float or numpy.ndarray
-        Negative of the secret key length ratio returned by ``objective``.
+        Negative of the secret key length ratio returned by objective.
 
     """
     return -objective(x, delta, m, eps_qkd, t, f)
@@ -171,15 +173,15 @@ def smart_optimise(m, delta, eps_qkd, t, f, granularity=200):
     Returns
     -------
     optimal_key_length_ratio : float
-        Optimised secret key length divided by the total block size ``m``.
+        Optimised secret key length divided by the total block size m.
 
     """
     init_vals = brute_search_parallel_equality(m, delta, eps_qkd, t, f, granularity)[1:]
     constraints = [
-    {'type': 'ineq', 'fun': lambda x: 0.5-abs(x[0])},  # beta <= 0.5 
-    {'type': 'ineq', 'fun': lambda x: 0.5-delta-x[1]},  #  nu <= 0.5-delta
-    {'type': 'ineq', 'fun': lambda x: 0.5-delta-x[2]},  #  xi <= 0.5-delta
-    {'type': 'ineq', 'fun': lambda x: x[1]-x[2]},  # nu >= xi
+    {'type': 'ineq', 'fun': lambda x: 0.5-abs(x[0])},   # beta <= 0.5
+    {'type': 'ineq', 'fun': lambda x: 0.5-delta-x[1]},  # nu <= 0.5 - delta
+    {'type': 'ineq', 'fun': lambda x: 0.5-delta-x[2]},  # xi <= 0.5 - delta
+    {'type': 'ineq', 'fun': lambda x: x[1]-x[2]},       # nu >= xi
     ]
     result = minimize(neg_objective,x0=init_vals,constraints=constraints,args=(delta, m, eps_qkd, t, f),method="Nelder-Mead")
     brute_result = objective(init_vals, delta, m, eps_qkd, t, f) 
