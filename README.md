@@ -11,13 +11,53 @@ This codebase is under active preparation. The repository should remain private 
 ## Repository Layout
 
 ```text
-src/uplink_qkd/      Reusable Python package code
-scripts/figures/     Scripts used to reproduce manuscript and supplementary figures
-data/processed/      Processed optimisation outputs used by figure scripts
-notebooks/           Exploratory and table-generation notebooks
-tests/               Lightweight regression and import tests
-docs/                Notes for reproducibility and scientific context
+uplink-qkd/
+|-- .github/
+|   |-- ISSUE_TEMPLATE/
+|   |   |-- bug_report.md              Bug-report template
+|   |   `-- reproducibility.md         Reproducibility-issue template
+|   `-- workflows/
+|       `-- tests.yml                  GitHub Actions test workflow
+|-- data/
+|   `-- processed/                     Processed optimisation outputs used by figure scripts
+|-- docs/
+|   `-- reproducibility.md             Notes on reproducibility and known data gaps
+|-- notebooks/                         Exploratory and table-generation notebooks
+|-- scripts/
+|   `-- figures/                       Manuscript and supplementary figure scripts
+|-- src/
+|   `-- uplink_qkd/                    Reusable Python package code
+|       |-- __init__.py                Public package interface
+|       |-- finite_key.py              Finite-key BBM92 optimisation routines
+|       `-- rates.py                   Coincidence and raw-overpass key-rate models
+|-- tests/                             Lightweight regression and import tests
+|-- CITATION.cff                       Software citation metadata
+|-- LICENSE                            Project license
+|-- MANIFEST.in                        Source-distribution file manifest
+|-- README.md                          Project overview
+`-- pyproject.toml                     Python packaging and tool configuration
 ```
+
+## Dependencies and Requirements
+
+The package requires Python `3.10` or newer.
+
+Core Python dependencies:
+
+- `numpy >= 1.24`
+- `scipy >= 1.10`
+- `matplotlib >= 3.7`
+- `tqdm >= 4.65`
+
+Development and testing dependencies:
+
+- `pytest >= 8.0`
+- `ruff >= 0.5`
+- `build >= 1.2`
+
+Notebook support:
+
+- `jupyter >= 1.0`
 
 ## Installation
 
