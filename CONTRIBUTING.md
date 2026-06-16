@@ -1,6 +1,10 @@
 # Contributing
 
-This repository is currently being prepared as the reference implementation for an associated research manuscript. Until public release, contributions should be coordinated with the PI.
+This repository is under active development and twinned with the reference article: implementation for an associated research manuscript:
+
+Optimised finite key in satellite up-link quantum communication with entangled photons, T. Jaeken, F. Redza, D. Oi, A. Fedrizzi, and J. S. Sidhu.
+
+Collaborations welcome. Please review ongoing and planned development roadmap.  
 
 ## Development Setup
 

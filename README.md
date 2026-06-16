@@ -82,7 +82,21 @@ For development, including testing and notebook support, run:
 python -m pip install -e ".[dev,notebooks]"
 ```
 
+## Development Roadmap
+
+`UplinkFiniteKey` is still a work in progress. Future and ongoing developments are listed below:
+
+- Dedicated documentation
+- Implement downlink version (https://arxiv.org/abs/2602.11833)
+- Integration with SatQuMA (https://github.com/cnqo-qcomms/SatQuMA) and SatQuMA_UI (https://github.com/JSS-root/SatQuMA_UI)
+- Multiscale search (coarse grid, refine) or adaptive sampling would dramatically speed up computation runtime.
+
+
 ## Quick Start
+
+The smart_optimise function performs a coarse brute-force search followed by local refinement over the optimisation parameters to compute the secret-key-length ratio for a given block size and QBER. 
+
+We recommend starting with granularity=50 for fast exploration. The speed/accuracy trade-off for higher granularity values can be increased up to granularity=300 for publication-quality results. Example below:
 
 ```python
 import numpy as np
@@ -111,9 +125,38 @@ Figure scripts are in `scripts/figures/`. Scripts that use the processed CSV fil
 
 Some supplementary scripts require external or generated loss-profile data that is not currently present in this repository. See [docs/reproducibility.md](docs/reproducibility.md) for the current data inventory and remaining reproducibility tasks.
 
-## Citation
+## Attribution
 
-If you use this software, please cite the associated paper and software record. Citation metadata is provided in [CITATION.cff](CITATION.cff) and should be updated with the final arXiv identifier and DOI once available.
+If you use this software, please cite as follows:
+
+```
+@software{,
+author = {},
+title = {{}},
+url = {},
+year = {}
+}
+```
+
+If you have used the finite-key optimisation to model uplink quantum communications, please also cite the following paper:
+
+```
+@article{,
+   title={},
+   volume={},
+   ISSN={},
+   url={},
+   DOI={},
+   number={},
+   journal={},
+   publisher={},
+   author={},
+   year={},
+   month={}
+}
+```
+
+ Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
 
 ## Author Contact
 
