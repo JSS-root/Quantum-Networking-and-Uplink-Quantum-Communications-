@@ -84,12 +84,13 @@ python -m pip install -e ".[dev,notebooks]"
 
 ## Development Roadmap
 
-`UplinkFiniteKey` is still a work in progress. Future and ongoing developments are listed below:
+`UplinkQKD` is still a work in progress. Future and ongoing developments are listed below:
 
 - Dedicated documentation
 - Implement downlink version (https://arxiv.org/abs/2602.11833)
 - Integration with SatQuMA (https://github.com/cnqo-qcomms/SatQuMA) and SatQuMA_UI (https://github.com/JSS-root/SatQuMA_UI)
 - Multiscale search (coarse grid, refine) or adaptive sampling would dramatically speed up computation runtime.
+- Efficient postprocessing for improved key rates and noise robustness.
 
 
 ## Quick Start
