@@ -14,6 +14,7 @@ the optimisation parameters and then refining the result using a local
 minimisation routine.
 
 """
+import typing
 import warnings
 
 import numpy as np
@@ -22,7 +23,7 @@ from scipy.optimize import minimize
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-def h(x):
+def h(x: typing.Union[float, np.ndarray]) -> typing.Union[float, np.ndarray]:
     """
     Calculate the binary entropy function.
 
@@ -39,7 +40,14 @@ def h(x):
     """
     return -x*np.log2(x) - (1-x)*np.log2(1-x)
 
-def objective(x, delta, m, eps_qkd, t, f):
+def objective(
+        x: typing.Union[list, np.typing.NDArray],
+        delta: float,
+        m: float,
+        eps_qkd: float,
+        t: float,
+        f: float
+) -> typing.Union[float, np.typing.NDArray]:
     """
     Calculate the finite-key secret key length ratio objective.
 
@@ -74,7 +82,14 @@ def objective(x, delta, m, eps_qkd, t, f):
     return l / m
 
 
-def brute_search_parallel_equality(m, delta, eps_qkd, t, f, granularity=200):
+def brute_search_parallel_equality(
+        m: float,
+        delta: float,
+        eps_qkd: float,
+        t: float,
+        f: float,
+        granularity=200
+) -> typing.Tuple[float, float, float, float]:
     """
     Perform a coarse brute-force search over the optimisation parameters.
 
@@ -114,7 +129,14 @@ def brute_search_parallel_equality(m, delta, eps_qkd, t, f, granularity=200):
     nu_array = np.tile(np.repeat(nu_range, len(xi_range)), len(beta_range))
     xi_array = np.tile(xi_range, len(beta_range)*len(nu_range))
     
-    alphas = objective([beta_array,nu_array,xi_array],delta, m, eps_qkd, t, f)
+    alphas = objective(
+        x=[beta_array,nu_array,xi_array],
+        delta=delta,
+        m=m,
+        eps_qkd=eps_qkd,
+        t=t,
+        f=f
+    )
     mask = np.where(np.logical_and(np.logical_and(np.logical_and(alphas>0, alphas<1-beta_array), ~np.isnan(alphas)),nu_array>xi_array))[0]
     try:
         index= np.argmax(alphas[mask])
@@ -123,7 +145,14 @@ def brute_search_parallel_equality(m, delta, eps_qkd, t, f, granularity=200):
         return 0,0,0,0
     
 # The actual optimisation
-def neg_objective(x, delta, m, eps_qkd, t, f):
+def neg_objective(
+        x: typing.Union[list, np.typing.NDArray],
+        delta: float,
+        m: float,
+        eps_qkd: float,
+        t: float,
+        f: float
+) -> typing.Union[float, np.typing.NDArray]:
     """
     Calculate the negative finite-key objective for minimisation.
 
@@ -151,7 +180,14 @@ def neg_objective(x, delta, m, eps_qkd, t, f):
     return -objective(x, delta, m, eps_qkd, t, f)
 
 
-def smart_optimise(m, delta, eps_qkd, t, f, granularity=200):
+def smart_optimise(
+        m: float,
+        delta: float,
+        eps_qkd: float,
+        t: float,
+        f: float,
+        granularity: int = 200
+) -> float:
     """
     Optimise the finite-key secret key length ratio.
 
@@ -184,10 +220,22 @@ def smart_optimise(m, delta, eps_qkd, t, f, granularity=200):
     {'type': 'ineq', 'fun': lambda x: x[1]-x[2]},       # nu >= xi
     ]
     result = minimize(neg_objective,x0=init_vals,constraints=constraints,args=(delta, m, eps_qkd, t, f),method="Nelder-Mead")
-    brute_result = objective(init_vals, delta, m, eps_qkd, t, f) 
+    brute_result = objective(
+        x=np.array(init_vals),
+        delta=delta,
+        m=m,
+        eps_qkd=eps_qkd,
+        t=t,
+        f=f
+    ) 
     if np.isnan(brute_result):  brute_result=0
     #Nelder Mead works after a brute coarse search, not on its own
     if -result.fun>=brute_result and np.all(np.array([0.5-abs(result.x[0]),0.5-delta-result.x[1],0.5-delta-result.x[2],result.x[1]-result.x[2]] > np.array([0, 0, 0, 0]))):
         if np.isnan(result.fun):  return 0
         return  -result.fun
-    return brute_result
+    return float(brute_result)
+
+if __name__ == "__main__":
+    x = 1
+    y = h(x=x)
+    print(y, type(y))

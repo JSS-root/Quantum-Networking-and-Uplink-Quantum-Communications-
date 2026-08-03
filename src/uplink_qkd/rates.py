@@ -1,5 +1,6 @@
 """Coincidence and raw-overpass key-rate models for satellite QKD links."""
 
+import typing
 from math import erf
 
 import numpy as np
@@ -38,7 +39,21 @@ class secure_key_rates:
         Initial brightness scale used by the optimiser.
 
     """
-    def __init__(self, d, t_delta, DC_A, DC_B, e_b, e_p, f=1.1, t_dead_A=0, t_dead_B=0, loss_format='loss', custom=False,B0=1):
+    def __init__(
+            self,
+            d: int,
+            t_delta: typing.Union[float, np.typing.ArrayLike],
+            DC_A: typing.Union[float, np.typing.ArrayLike],
+            DC_B: typing.Union[float, np.typing.ArrayLike],
+            e_b: float,
+            e_p: float,
+            f: float = 1.1,
+            t_dead_A: typing.Union[float, np.typing.ArrayLike] = 0,
+            t_dead_B: typing.Union[float, np.typing.ArrayLike] = 0,
+            loss_format: typing.Literal['loss', 'dB'] = 'loss',
+            custom: bool = False,
+            B0: float = 1
+    ) -> None:
         """
         Initialise detector, timing, error, and optimisation parameters.
 
@@ -81,7 +96,7 @@ class secure_key_rates:
         self.phase_error = e_p
         
         self.set_darkcounts(DC_A, DC_B)
-        self.set_jitter( t_delta)
+        self.set_jitter(t_delta)
         self.set_dead_time(t_dead_A, t_dead_B)
 
         self.loss_format = loss_format
@@ -89,7 +104,7 @@ class secure_key_rates:
         if not custom:
             self.optimal_params, self.optimal_key_rate = self.optimize_performance(B0)
 
-    def __dB_to_loss__(self):
+    def __dB_to_loss__(self) -> None:
         """
         Convert stored detector efficiencies from dB loss to linear efficiency.
 
@@ -105,7 +120,11 @@ class secure_key_rates:
         self.efficiencies_A = 10 ** (-np.array(self.efficiencies_A) / 10)
         self.efficiencies_B = 10 ** (-np.array(self.efficiencies_B) / 10)
 
-    def set_darkcounts(self, DC_A, DC_B):
+    def set_darkcounts(
+            self,
+            DC_A: typing.Union[float, np.typing.ArrayLike],
+            DC_B: typing.Union[float, np.typing.ArrayLike]
+    ) -> None:
         """
         Store dark-count rates for both communication partners.
 
@@ -130,7 +149,10 @@ class secure_key_rates:
         else:
             self.dark_counts_B = DC_B
 
-    def set_jitter(self, t_delta):
+    def set_jitter(
+            self,
+            t_delta: typing.Union[float, np.typing.ArrayLike]
+    ) -> None:
         """
         Store timing imprecision values for detector-pair coincidence windows.
 
@@ -149,7 +171,11 @@ class secure_key_rates:
         else:
             self.timing_imprecision = t_delta
 
-    def set_dead_time(self, t_dead_A, t_dead_B):
+    def set_dead_time(
+            self,
+            t_dead_A: typing.Union[float, np.typing.ArrayLike],
+            t_dead_B: typing.Union[float, np.typing.ArrayLike]
+    ) -> None:
         """
         Store detector dead times for both communication partners.
 
@@ -174,7 +200,12 @@ class secure_key_rates:
         else:
             self.t_dead_B = t_dead_B
 
-    def __coincidence_window_loss__(self, x, j, k):
+    def __coincidence_window_loss__(
+            self,
+            x: float,
+            j: int,
+            k: int
+    ) -> float:
         """
         Calculate the timing-window acceptance for one detector pair.
 
@@ -195,7 +226,12 @@ class secure_key_rates:
         """
         return erf(np.sqrt(np.log(2)) * (x / self.timing_imprecision[j + k*self.d]))
 
-    def __total_efficiency__(self, eff, b, t_dead):
+    def __total_efficiency__(
+            self,
+            eff: float,
+            b: float,
+            t_dead: float
+    ) -> float:
         """
         Calculate detector efficiency including dead-time reduction.
 
@@ -216,7 +252,10 @@ class secure_key_rates:
         """
         return eff / (1+b*eff*t_dead/self.d)
 
-    def __coincidences_measured__(self, x):
+    def __coincidences_measured__(
+            self,
+            x: typing.Union[list[float],np.typing.NDArray]
+    ) -> float:
         """
         Calculate the measured coincidence rate.
 
@@ -235,15 +274,26 @@ class secure_key_rates:
         for j in range(self.d):
             for k in range(self.d):
                 # the contribution of true CC
-                result += self.__coincidence_window_loss__(x[0], j, k) * x[1] * self.__total_efficiency__(
-                    self.efficiencies_A[j], x[1], self.t_dead_A[k]) * self.__total_efficiency__(self.efficiencies_B[k], x[1], self.t_dead_B[k])
+                result += self.__coincidence_window_loss__(
+                    x=x[0],
+                    j=j,
+                    k=k
+                ) * x[1] * self.__total_efficiency__(
+                    eff=self.efficiencies_A[j],
+                    b=x[1],
+                    t_dead=self.t_dead_A[k]
+                ) * self.__total_efficiency__(self.efficiencies_B[k], x[1], self.t_dead_B[k])
                 # Contribution of accidental CC
                 result += x[0] * (x[1]*self.__total_efficiency__(self.efficiencies_A[j], x[1], self.t_dead_A[k])+self.dark_counts_A[j]) * (
                     x[1]*self.__total_efficiency__(self.efficiencies_B[k], x[1], self.t_dead_B[k])+self.dark_counts_B[k])
 
         return result
 
-    def __coincidences_erroneous__(self, x, bit_error):
+    def __coincidences_erroneous__(
+            self,
+            x: typing.Union[list[float], np.typing.NDArray],
+            bit_error: float
+    ) -> float:
         """
         Calculate the erroneous coincidence rate.
 
@@ -274,7 +324,7 @@ class secure_key_rates:
                     
         return result
     
-    def __binary_entropy__(self, x):
+    def __binary_entropy__(self, x: float) -> float:
         """
         Calculate the binary entropy function.
 
@@ -291,7 +341,10 @@ class secure_key_rates:
         """
         return -x * np.log2(x) - (1 - x) * np.log2(1 - x)
 
-    def __objective__(self, x):
+    def __objective__(
+            self,
+            x: typing.Union[list[float], np.typing.NDArray]
+    ) -> float:
         """
         Calculate the negative asymptotic secure key-rate objective.
 
@@ -314,7 +367,13 @@ class secure_key_rates:
 
         return - q * CC_m * (1.0 - self.f * self.__binary_entropy__(E_b) - self.__binary_entropy__(E_p))
 
-    def custom_performance(self, tcc, B, eff_A, eff_B):
+    def custom_performance(
+            self,
+            tcc: float,
+            B: float,
+            eff_A: typing.Union[float, np.typing.NDArray],
+            eff_B: typing.Union[float, np.typing.NDArray]
+    ) -> float:
         """
         Calculate key-rate performance for specified system parameters.
 
@@ -351,7 +410,12 @@ class secure_key_rates:
         self.efficiencies_A /= self.d 
         return - self.__objective__(x)
 
-    def optimize_performance(self, eff_A, eff_B, B0=1):
+    def optimize_performance(
+            self,
+            eff_A: typing.Union[float, np.typing.NDArray],
+            eff_B: typing.Union[float, np.typing.NDArray],
+            B0: float = 1
+    ) -> tuple[list[float], float]:
         """
         Optimise coincidence-window duration and brightness.
 
@@ -391,7 +455,16 @@ class secure_key_rates:
         return [result.x[0]*self.timing_imprecision[0], result.x[1]*1e9], -result.fun
 
 
-def raw_overpass(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
+def raw_overpass(
+        params: typing.Union[list[float], np.typing.NDArray],
+        loss_profile: np.typing.NDArray,
+        t_delta: float = 0.4e-9,
+        DC_A: float = 200,
+        DC_B: float = 70,
+        t_dead_A: float = 25e-9,
+        t_dead_B: float = 45e-9,
+        power: float =1
+) -> tuple[float, float, float]:
     """
     Calculate average error rates and measured coincidences over an overpass.
 
@@ -446,7 +519,17 @@ def raw_overpass(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_
         
     return avg_qber, avg_qx, np.sum(CC_m_overpass)
 
-def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
+def raw_overpass_cutoff(
+        params: typing.Union[list[float], np.typing.NDArray],
+        loss_profile: np.typing.NDArray,
+        cutoff: float,
+        t_delta: float = 0.4e-9,
+        DC_A: float = 200,
+        DC_B: float = 70,
+        t_dead_A: float = 25e-9,
+        t_dead_B: float = 45e-9,
+        power: float = 1
+) -> tuple[float, float, float]:
     """
     Calculate overpass quantities after applying an error-rate cutoff.
 
@@ -485,7 +568,18 @@ def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, D
     intrinsic_heralding_1550, intrinsic_heralding_780, qber, qx, Brightness, Tcc = params
     Brightness*=power
     # Brightness, t_delta,intrinsic_heralding_1550, intrinsic_heralding_780,bit_err, phase_err= params
-    setup = secure_key_rates(d=4, t_delta=t_delta, DC_A=DC_A, DC_B=DC_B, e_b=qber, e_p=qx, t_dead_A=t_dead_A, t_dead_B=t_dead_B, loss_format='dB', custom=True)
+    setup = secure_key_rates(
+        d=4,
+        t_delta=t_delta,
+        DC_A=DC_A,
+        DC_B=DC_B,
+        e_b=qber,
+        e_p=qx,
+        t_dead_A=t_dead_A,
+        t_dead_B=t_dead_B,
+        loss_format='dB',
+        custom=True
+    )
     E_b=[]
     E_p=[]
     CC_m_overpass = []
@@ -506,7 +600,16 @@ def raw_overpass_cutoff(params, loss_profile, cutoff, t_delta=0.4e-9,DC_A=200, D
         
     return avg_qber, avg_qx, np.sum(CC_m_overpass)
 
-def raw_overpass_instant(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70, t_dead_A=25e-9, t_dead_B=45e-9,power=1):
+def raw_overpass_instant(
+        params: typing.Union[list[float], np.typing.NDArray],
+        loss_profile: np.typing.NDArray,
+        t_delta: float = 0.4e-9,
+        DC_A: float = 200,
+        DC_B: float = 70,
+        t_dead_A: float = 25e-9,
+        t_dead_B: float = 45e-9,
+        power: float = 1
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate instantaneous error rates and coincidences over an overpass.
 
@@ -543,7 +646,18 @@ def raw_overpass_instant(params, loss_profile, t_delta=0.4e-9,DC_A=200, DC_B=70,
     intrinsic_heralding_1550, intrinsic_heralding_780, qber, qx, Brightness, Tcc = params
     Brightness*=power
     # Brightness, t_delta,intrinsic_heralding_1550, intrinsic_heralding_780,bit_err, phase_err= params
-    setup = secure_key_rates(d=4, t_delta=t_delta, DC_A=DC_A, DC_B=DC_B, e_b=qber, e_p=qx, t_dead_A=t_dead_A, t_dead_B=t_dead_B, loss_format='dB', custom=True)
+    setup = secure_key_rates(
+        d=4,
+        t_delta=t_delta,
+        DC_A=DC_A,
+        DC_B=DC_B,
+        e_b=qber,
+        e_p=qx,
+        t_dead_A=t_dead_A,
+        t_dead_B=t_dead_B,
+        loss_format='dB',
+        custom=True
+    )
     E_b=[]
     E_p=[]
     CC_m_overpass = []
