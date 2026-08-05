@@ -2,9 +2,9 @@
 
 This repository is under active development and twinned with the reference article: implementation for an associated research manuscript:
 
-Optimised finite key in satellite up-link quantum communication with entangled photons, T. Jaeken, F. Redza, D. Oi, A. Fedrizzi, and J. S. Sidhu.
+Optimised finite key in satellite up-link quantum communication with entangled photons, T. Jaeken, F. Redza, D. K. L. Oi, A. Fedrizzi, and J. S. Sidhu.
 
-Collaborations welcome. Please review ongoing and planned development roadmap.  
+Collaborations welcome. Please review ongoing and planned development roadmap in `README` file.  
 
 ## Development Setup
 

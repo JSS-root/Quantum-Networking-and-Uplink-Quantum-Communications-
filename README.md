@@ -1,12 +1,12 @@
-# Uplink QKD Viability
+# Uplink QKD Viability Analysis
 
-This repository contains Python code and supporting data for modelling the viability of satellite-uplink quantum key distribution (QKD), with emphasis on finite-key optimisation and link-level key-rate modelling for BBM92-style entanglement-based protocols.
+This repository contains Python code and supporting data for modelling the viability of entanglement-based satellite-uplink quantum key distribution (QKD), with emphasis on finite-key optimisation and link-level key-rate modelling for BBM92-style entanglement-based protocols.
 
-The repository is being prepared alongside an associated manuscript draft and is intended to support reproducible figures, tables, and future archival citation through GitHub, PyPI, arXiv, and DOI-backed software archiving.
+The repository supports an associated manuscript and is intended to support reproducible figures, tables, and future archival citation through GitHub, PyPI, arXiv, and DOI-backed software archiving.
 
-## Status
+## Release version
 
-This codebase is under active preparation. The repository should remain private until the manuscript and software metadata have been reviewed.
+Version 1.1.0 release: September 2026.
 
 ## Repository Layout
 
@@ -131,12 +131,14 @@ Some supplementary scripts require external or generated loss-profile data that 
 If you use this software, please cite as follows:
 
 ```
-@software{,
-author = {},
-title = {{}},
-url = {},
-year = {}
+@software{Sidhu_quantum_networking_2026,
+author = {Sidhu, Jasminder},
+title = {{Quantum Networking and Uplink Quantum Communications}},
+url = {https://github.com/JSS-root/Quantum-Networking-and-Uplink-Quantum-Communications-},
+year = {2026}
 }
+
+
 ```
 
 If you have used the finite-key optimisation to model uplink quantum communications, please also cite the following paper:
@@ -161,6 +163,7 @@ If you have used the finite-key optimisation to model uplink quantum communicati
 
 ## Author Contact
 
+Enquiries and requests can be sent to: 
 [Jasminder S. Sidhu](mailto:jsmdrsidhu%40gmail.com)
 
 ## Related Work
