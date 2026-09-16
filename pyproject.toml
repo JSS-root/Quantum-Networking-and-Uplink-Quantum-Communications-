@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "uplink-qkd"
 version = "0.1.0"
-description = "Theoretical and numerical models for satellite-uplink QKD viability studies."
+description = "Theoretical and numerical models for satellite-uplink QKD viability."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
-    { name = "James S. Sidhu" }
+    { name = "Jasminder S. Sidhu" }
 ]
 keywords = [
     "quantum-key-distribution",
