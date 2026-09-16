@@ -133,7 +133,7 @@ If you use this software, please cite as follows:
 
 ```
 @software{Quantum_networking_software_2026,
-  author    = {Jaeken, Thomas and Redza, Faris and Sidhu, Jasminder S.},
+  author    = {Sidhu, Jasminder S. and Jaeken, Thomas and Redza, Faris},
   title     = {{Quantum Networking and Uplink Quantum Communications (v1.1.0)}},
   year      = {2026},
   publisher = {Zenodo},
