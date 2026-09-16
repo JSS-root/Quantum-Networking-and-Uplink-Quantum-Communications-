@@ -140,8 +140,6 @@ If you use this software, please cite as follows:
   doi       = {10.5281/zenodo.22795420},
   url       = {[https://doi.org/10.5281/zenodo.22795420](https://doi.org/10.5281/zenodo.22795420)}
 }
-
-
 ```
 
 Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
