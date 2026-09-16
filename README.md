@@ -157,6 +157,7 @@ If you have used the finite-key optimisation to model uplink quantum communicati
    month={}
 }
 ```
+Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
 
 ## Author Contact
 
