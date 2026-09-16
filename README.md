@@ -7,6 +7,7 @@ The repository supports an associated manuscript and is intended to support repr
 ## Release version
 
 Version 1.1.0 release: September 2026.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22795420.svg)](https://doi.org/10.5281/zenodo.22795420)
 
 ## Repository Layout
 
@@ -132,31 +133,17 @@ If you use this software, please cite as follows:
 
 ```
 @software{Sidhu_quantum_networking_2026,
-author = {Sidhu, Jasminder},
-title = {{Quantum Networking and Uplink Quantum Communications}},
-url = {https://github.com/JSS-root/Quantum-Networking-and-Uplink-Quantum-Communications-},
-year = {2026}}
-
-
-```
-
-If you have used the finite-key optimisation to model uplink quantum communications, please also cite the following paper:
-
-```
-@article{,
-   title={},
-   volume={},
-   ISSN={},
-   url={},
-   DOI={},
-   number={},
-   journal={},
-   publisher={},
-   author={},
-   year={},
-   month={}
+  author    = {Sidhu, Jasminder S.},
+  title     = {{Quantum Networking and Uplink Quantum Communications}},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22795420},
+  url       = {[https://doi.org/10.5281/zenodo.22795420](https://doi.org/10.5281/zenodo.22795420)}
 }
+
+
 ```
+
 Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
 
 ## Author Contact
