@@ -141,6 +141,22 @@ If you use this software, please cite as follows:
   url       = {https://doi.org/10.5281/zenodo.22795420}
 }
 ```
+If you have used the finite-key optimisation to model uplink quantum communications, please also cite the following paper:
+
+```
+@article{,
+   title={},
+   volume={},
+   ISSN={},
+   url={},
+   DOI={},
+   number={},
+   journal={},
+   publisher={},
+   author={},
+   year={},
+   month={}
+}
 
 Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
 
