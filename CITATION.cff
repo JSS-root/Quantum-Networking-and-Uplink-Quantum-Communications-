@@ -1,12 +1,16 @@
 cff-version: 1.2.0
 
 
-title: "Quantum Networking and Uplink Quantum Communications"
+title: "Quantum Networking and Uplink Quantum Communications (v1.1.0)"
 type: software and dataset
 authors:
   - family-names: "Sidhu"
     given-names: "Jasminder Singh"
     orcid: "https://orcid.org/0000-0002-6167-8224"
+  - family-names: "Jaeken"
+    given-names: "Thomas"
+  - family-names: "Redza"
+    given-names: "Faris"
 doi: "10.5281/zenodo.22795420"
 repository-code: "https://github.com/JSS-root/Quantum-Networking-and-Uplink-Quantum-Communications-"
 version: "1.0.0"
