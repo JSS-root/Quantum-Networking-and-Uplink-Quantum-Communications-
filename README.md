@@ -158,8 +158,6 @@ If you have used the finite-key optimisation to model uplink quantum communicati
 }
 ```
 
- Citation metadata can also be seen in [CITATION.cff](CITATION.cff).
-
 ## Author Contact
 
 Enquiries and requests can be sent to: 
