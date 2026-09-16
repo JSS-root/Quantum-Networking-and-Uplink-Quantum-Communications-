@@ -135,8 +135,7 @@ If you use this software, please cite as follows:
 author = {Sidhu, Jasminder},
 title = {{Quantum Networking and Uplink Quantum Communications}},
 url = {https://github.com/JSS-root/Quantum-Networking-and-Uplink-Quantum-Communications-},
-year = {2026}
-}
+year = {2026}}
 
 
 ```
