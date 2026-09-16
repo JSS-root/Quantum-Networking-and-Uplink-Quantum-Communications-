@@ -132,13 +132,13 @@ Some supplementary scripts require external or generated loss-profile data that 
 If you use this software, please cite as follows:
 
 ```
-@software{Sidhu_quantum_networking_2026,
-  author    = {Sidhu, Jasminder S.},
-  title     = {{Quantum Networking and Uplink Quantum Communications}},
+@software{Quantum_networking_software_2026,
+  author    = {Jaeken, Thomas and Redza, Faris and Sidhu, Jasminder S.},
+  title     = {{Quantum Networking and Uplink Quantum Communications (v1.1.0)}},
   year      = {2026},
   publisher = {Zenodo},
   doi       = {10.5281/zenodo.22795420},
-  url       = {[https://doi.org/10.5281/zenodo.22795420](https://doi.org/10.5281/zenodo.22795420)}
+  url       = {https://doi.org/10.5281/zenodo.22795420}
 }
 ```
 
