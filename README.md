@@ -137,8 +137,8 @@ If you use this software, please cite as follows:
   title     = {{Quantum Networking and Uplink Quantum Communications (v1.1.0)}},
   year      = {2026},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.22795420},
-  url       = {https://doi.org/10.5281/zenodo.22795420}
+  doi       = {10.5281/zenodo.22795419},
+  url       = {https://doi.org/10.5281/zenodo.22795419}
 }
 ```
 If you have used the finite-key optimisation to model uplink quantum communications, please also cite the following paper:
